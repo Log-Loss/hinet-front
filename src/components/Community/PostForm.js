@@ -23,7 +23,7 @@ export default class CardForm extends PureComponent {
         this.props.dispatch({
           type: 'post/add',
           payload: {
-            ...values, userId: localStorage.getItem('email'),
+            ...values, userId: localStorage.getItem('id'),
           },
         });
         notification.success({message: 'Finished!'});
@@ -91,6 +91,16 @@ export default class CardForm extends PureComponent {
             rules: [{required: true, message: `content is required`,}],
           })(
             <TextArea rows={4} />
+          )}
+        </FormItem>
+
+        <FormItem {...formItemLayout}
+                  key='content'
+                  label={<span>Link</span>}>
+          {getFieldDecorator('link', {
+            rules: [],
+          })(
+            <Input />
           )}
         </FormItem>
 

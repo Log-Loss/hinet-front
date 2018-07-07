@@ -18,13 +18,14 @@ export default {
       const response = yield call(login, payload);
       yield put({
         type: 'changeLoginStatus',
-        payload: response,
+        payload: response && response[0] === 'true' ? 200 : 400,
       });
       // Login successfully
-      if (response.code === 200) {
-        localStorage.setItem('id', response.result.id);
-        localStorage.setItem('email', response.result.email);
-        yield put(routerRedux.push('/workspaces'));
+      console.log(response)
+      if (response && response[0] === 'true') {
+        localStorage.setItem('id', response[1]);
+        localStorage.setItem('email',payload.email);
+        yield put(routerRedux.push('/community'));
       }
     },
     *logout(_, { put }) {
@@ -36,7 +37,7 @@ export default {
       });
       localStorage.removeItem('id');
       localStorage.removeItem('email');
-      yield put(routerRedux.push('/hello'));
+      yield put(routerRedux.push('/user/login'));
     },
   },
 

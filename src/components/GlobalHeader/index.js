@@ -48,35 +48,14 @@ export default class GlobalHeader extends PureComponent {
             <Divider type="vertical" key="line"/>,
           ]
         )}
-        <Icon
-          className={styles.trigger}
-          type={collapsed ? 'menu-unfold' : 'menu-fold'}
-          onClick={this.toggle}
-        />
+        {/*<Icon*/}
+          {/*className={styles.trigger}*/}
+          {/*type={collapsed ? 'menu-unfold' : 'menu-fold'}*/}
+          {/*onClick={this.toggle}*/}
+        {/*/>*/}
 
 
         <div className={styles.right}>
-          <Tooltip placement="bottom" title="home">
-            <Icon
-              onClick={()=>dispatch(routerRedux.push('/hello'))}
-              className={styles.trigger}
-              type="home"
-            />
-          </Tooltip>
-          <Tooltip placement="bottom" title="community">
-            <Icon
-              onClick={()=>dispatch(routerRedux.push('community'))}
-              className={styles.trigger}
-              type="team"
-            />
-          </Tooltip>
-          <Tooltip placement="bottom" title="console">
-            <Icon
-              onClick={()=>dispatch(routerRedux.push('/'))}
-              className={styles.trigger}
-              type="code-o"
-            />
-          </Tooltip>
           {currentUser.id ? (
             <Dropdown overlay={menu}>
               <span className={`${styles.action} ${styles.account}`}>

@@ -89,9 +89,9 @@ class BasicLayout extends React.PureComponent {
   getPageTitle() {
     const { routerData, location } = this.props;
     const { pathname } = location;
-    let title = 'Hi, net';
+    let title = 'Paperly';
     if (routerData[pathname] && routerData[pathname].name) {
-      title = `${routerData[pathname].name} - Hi, net`;
+      title = `${routerData[pathname].name} - Paperly`;
     }
     return title;
   }
@@ -131,7 +131,7 @@ class BasicLayout extends React.PureComponent {
         <SiderMenu
           logo={logo}
           menuData={getMenuData()}
-          collapsed={collapsed}
+          collapsed={true}
           location={location}
           isMobile={this.state.isMobile}
           onCollapse={this.handleMenuCollapse}
@@ -168,7 +168,7 @@ class BasicLayout extends React.PureComponent {
                     />
                   ))
                 }
-                <Redirect exact from="/" to="/workspaces" />
+                <Redirect exact from="/" to="/community" />
                 <Route render={NotFound} />
               </Switch>
             </div>

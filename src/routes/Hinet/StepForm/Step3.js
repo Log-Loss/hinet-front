@@ -69,61 +69,7 @@ class Step3 extends React.PureComponent {
     );
     return (
       <div>
-        {job ? (
-          <Row gutter={10} style={{marginBottom: 60}}>
-            <Col span={18}>
-              <div style={{width: '100%', border: '1px solid #eeeeee', padding: 20, marginBottom: 10}}>
-                <TrainingForm/>
-              </div>
-              <div style={{border: '1px solid #eeeeee', padding: 20, width: '100%'}}>
-                <Row>
-                  <Col span={24}>
-                <StatChart data={state}/>
-                  </Col></Row>
-              </div>
-            </Col>
-            <Col span={6}>
-              <ChartCard
-                title={'Training Time'}
-                avatar={
-                  <Avatar size='large'
-                          style={{backgroundColor: '#87d068'}}>{jobs.find(e => e.id === job.id).id}</Avatar>
-                }
-                action={<Tooltip title="You can view your former training jobs by the dropdown menu.">
-                  <Icon type="info-circle-o"/></Tooltip>}
-                total={!job.message?(job.finishTime && job.startTime ?
-                  `${((job.finishTime - job.startTime) / 1000).toFixed(2)} s` : 'Training'):'Error'}
-              />
-              <ChartCard
-                title={`${dateFtt("yyyy-MM-dd hh:mm:ss", job.createTime)}`}
-                action={<Dropdown overlay={menu}><Icon type="sync"/></Dropdown>}
-                contentHeight={200}
-                footer={footer}
-              >
-                <div style={{textAlign: 'center'}}>
-                  {job.finishTime ?
-                    <Pie
-                      color={colors[parseInt(job.accuracy/0.4, 10)]}
-                      height={161}
-                      subTitle={'Accuracy'}
-                      total={job.accuracy.toFixed(4)*100+'%'}
-                      percent={job.accuracy*100}/>
-                    :
-                    <Pie
-                      color={colors[3]}
-                      height={161}
-                      subTitle="Training"
-                      total={percent.toFixed(2)+'%'}
-                      percent={percent}/>}
-                </div>
-              </ChartCard>
-            </Col>
-          </Row>
-        ) : (
-          <div style={{width: '100%', border: '1px solid #eeeeee', padding: 20, marginBottom: 10}}>
-            <TrainingForm/>
-          </div>
-        )}
+        <div>todo</div>
 
         <FooterToolbar children={
           <Button type="dashed" onClick={onPrev} key={0}>

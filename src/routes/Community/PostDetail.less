@@ -1,18 +1,91 @@
-@import "~antd/lib/style/themes/default.less";
-@import "../../../../../Downloads/hi-net-community-frontend-master/src/utils/utils.less";
-@import url('https://fonts.googleapis.com/css?family=Merriweather:900|Open+Sans');
+@import "../../../node_modules/antd/lib/style/themes/default.less";
+@import "../../utils/utils.less";
 
-.post {
-  .postTitle {
-    font-size: 32px;
-    font-weight: 600;
-    font-family: 'Merriweather', serif;
+.container {
+  :global {
+    .ant-card-meta {
+      overflow: visible;
+    }
+    .ant-card-meta-avatar {
+      overflow: visible;
+    }
+  }
+  .newButton {
+    background-color: #fff;
+    border-color: @border-color-base;
+    border-radius: @border-radius-sm;
+    color: @text-color-secondary;
+    width: 100%;
+    height: 142px;
   }
 
-  .postContent {
-    font-size: 21px;
-    font-weight: 400;
-    line-height: 1.58;
-    font-family: 'Open Sans', sans-serif;
+  .listContent {
+    .listItemMetaTitle {
+      font-size: 20px;
+    }
+    .description {
+      margin-left: 40px;
+      margin-top: 10px;
+      line-height: 22px;
+      max-width: 720px;
+    }
+    .extra {
+      color: @text-color-secondary;
+      margin-top: 16px;
+      line-height: 22px;
+      & > :global(.ant-avatar) {
+        vertical-align: top;
+        margin-right: 8px;
+        width: 20px;
+        height: 20px;
+        position: relative;
+        top: 1px;
+      }
+      & > em {
+        color: @disabled-color;
+        font-style: normal;
+        margin-left: 16px;
+      }
+    }
   }
+  a.listItemMetaTitle {
+    color: @heading-color;
+  }
+  .listItemExtra {
+    width: 272px;
+    height: 1px;
+  }
+  .selfTrigger {
+    margin-left: 12px;
+  }
+
+  @media screen and (max-width: @screen-xs) {
+    .selfTrigger {
+      display: block;
+      margin-left: 0;
+    }
+
+    .listContent {
+      .extra {
+        & > em {
+          display: block;
+          margin-left: 0;
+          margin-top: 8px;
+        }
+      }
+    }
+  }
+  @media screen and (max-width: @screen-md) {
+    .selfTrigger {
+      display: block;
+      margin-left: 0;
+    }
+  }
+  @media screen and (max-width: @screen-lg) {
+    .listItemExtra {
+      width: 0;
+      height: 1px;
+    }
+  }
+
 }

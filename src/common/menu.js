@@ -1,24 +1,16 @@
 const menuData = [{
-  name: 'Workspaces',
-  icon: 'layout',
-  path: 'workspaces',
-}, {
-  name: 'Workspace',
-  path: 'workspace/:id',
-  hideInMenu: true,
-}, {
-  name: 'Model',
-  path: 'model/:id',
-  hideInMenu: true,
-}, {
   icon: 'team',
   name: 'Community',
   path: 'community',
 }, {
-    name: 'My Posts',
-    path: 'posts',
-  icon: 'profile',
+  icon: 'book',
+  name: 'My Posts',
+  path: 'posts',
 }, {
+  icon: 'edit',
+  name: 'My Read List',
+  path: 'read',
+},{
   name: '异常页',
   icon: 'warning',
   hideInMenu: true,

@@ -1,98 +1,194 @@
-import React, { Component } from 'react';
-import { connect } from 'dva';
-import { Row, Col, Card, Avatar, List, Icon, Input, Button } from 'antd';
+import React, {Component} from 'react';
+import {connect} from 'dva';
+import {Link, routerRedux} from 'dva/router';
+import {Row, Col, Card, Avatar, List, Icon, Input, Button, Tooltip} from 'antd';
 import styles from './PostDetail.less';
 
-const { Secured } = Authorized;
-const { Meta } = Card;
-const { TextArea } = Input;
+import PageHeaderLayout from '../../layouts/PageHeaderLayout';
+import {dateFtt} from "../../utils/utils";
+import Comments from "../../components/Community/Comments";
+
+const {Meta} = Card;
+const {TextArea} = Input;
 
 
-@Secured('admin')
-@connect(({ item, loading }) => ({
-  item,
-  loading: loading.models.item,
-}))
-@connect(({ list, loading }) => ({
-  list,
-  loading: loading.models.list,
+@connect((state) => ({
+  item: state.post.item,
+  loading: state.post.loading,
+  comments: state.post.comments,
+  commentLoading: state.post.commentLoading,
+  likes: state.post.likes,
+  likeLoading: state.post.likeLoading,
 }))
 export default class PostDetail extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      editing: false,
+      content: '',
+      link: '',
+      title: ''
+    }
+  }
+
+  queryComment() {
+    this.refs.comments.focusSearch()
+  }
 
   componentDidMount() {
     this.props.dispatch({
-      type: 'item/fetch',
-      payload: {
-        postId: 'Yqh4LIgX7k',
-      },
+      type: 'post/fetch',
+      payload: this.props.match.params.postId
     });
     this.props.dispatch({
-      type: 'list/fetchComments',
-      payload: {
-        postId: 'Yqh4LIgX7k',
-      },
+      type: 'post/fetchComments',
+      payload: this.props.match.params.postId,
+    });
+    this.props.dispatch({
+      type: 'post/fetchLikes',
+      payload: this.props.match.params.postId,
     });
   }
 
+  onEditStart = (item) => {
+    this.setState({editing: true, content: item.content, title: item.title, link: item.link})
+  }
+
+  onEditCancel = () => {
+    this.setState({editing: false})
+  }
+
+  onReadList = () => {
+    this.props.dispatch({
+      type: 'post/addReadList',
+      payload: {
+        userId: localStorage.getItem('id'),
+        links: [this.props.item.link]
+      }
+    });
+  }
+
+
+
+  onEdit = () => {
+    this.props.dispatch({
+      type: 'post/put',
+      payload: {
+        postId: this.props.item.postId,
+        params: {
+          userId: this.props.item.userId,
+          link: this.state.link,
+          title: this.state.title,
+          content: this.state.content
+        }
+      }
+    });
+    this.setState({editing: false})
+    this.componentDidMount()
+  }
+
+  onLike = () => {
+    const userId = localStorage.getItem('id');
+    const likes = this.props.likes
+    const like = likes.find(e => e.userId === userId)
+    if (!like) {
+      this.props.dispatch({
+        type: 'post/addLike',
+        payload: {
+          postId: this.props.item.postId,
+          userId
+        }
+      });
+
+    } else {
+      this.props.dispatch({
+        type: 'post/deleteLike',
+        payload: like.likeId
+      });
+
+    }
+    setTimeout(() => this.props.dispatch({
+      type: 'post/fetchLikes',
+      payload: this.props.match.params.postId,
+    }), 500)
+  }
+
+
+
   render() {
-    const { list: { list }, loading } = this.props;
-    console.log(this.props);
-    return (
-      <div>
-        <Row>
-          <Col className={styles.post} span={16} offset={4} style={{ marginBottom: 24 }}>
-            <Card bordered={false}>
-              <h1 className={styles.postTitle}>Post Title</h1>
-              <p className={styles.postContent}>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum in ex ex. Donec a lacinia risus. Nullam quis lorem lobortis, malesuada enim id, accumsan turpis. Integer tincidunt urna ligula, at feugiat libero volutpat a. Integer auctor, eros non ullamcorper porttitor, ex dolor accumsan urna, ut molestie purus felis non ante. Phasellus ac lorem faucibus, condimentum erat ac, fermentum mi. Suspendisse potenti. Fusce convallis scelerisque dolor, id feugiat sem. Maecenas in mi non turpis posuere bibendum non eget ipsum. Praesent blandit, nunc sed efficitur mattis, tellus magna elementum velit, a ullamcorper neque risus quis nibh. Pellentesque ut mollis velit. Maecenas rutrum justo ligula, ac luctus tortor tristique at.
+    const {item, loading, dispatch, comments, likes} = this.props;
+    const userId = localStorage.getItem('id');
+    if (!item || !item.id) return null;
 
-                Fusce nulla diam, pellentesque sit amet fermentum ut, rhoncus varius nisl. Nullam pharetra libero sed egestas accumsan. Etiam rhoncus purus sit amet mollis consectetur. Integer sed libero id sapien rhoncus varius. Nunc felis urna, pharetra ut justo ut, pharetra volutpat ex. Quisque libero lorem, sodales at tincidunt eu, blandit ut est. Duis aliquet nec velit sit amet sodales. Curabitur vel nunc diam. In commodo nulla a massa iaculis pellentesque.
-              </p>
-            </Card>
-          </Col>
-        </Row>
-        <Row>
-          <Col span={16} offset={4} style={{ marginBottom: 24 }}>
-            <Card title="Comments" bordered={false}/>
-          </Col>
-        </Row>
 
-        <List
-          rowKey="id"
-          dataSource={['', ...list]}
-          split={false}
-          renderItem={item =>( item? (
-              <List.Item key={item.id} >
-                <Col span={16} offset={4}>
-                  <Card
-                    loading={loading}
-                    bordered={false}
-                  >
-                    <Meta
-                      avatar={<Avatar src={item.avatar} />}
-                      title={item.title}
-                      description={item.description}
-                    />
-                  </Card>
-                </Col>
-              </List.Item>
-            ) : (<div></div>)
-          )}
-        />
-        <Row>
-          <Col span={16} offset={4} style={{ marginBottom: 24 }}>
-            <Card title="Add Comments" bordered={false}>
-              <TextArea placeholder="Your Comment Here ..." autosize={{ minRows: 2, maxRows: 4 }} />
-              <Row>
-                <Col span={4} offset={20}>
-                  <Button style={{ marginTop: 20 }}>Comment</Button>
-                </Col>
-              </Row>
-
-            </Card>
-          </Col>
-        </Row>
+    const ListContent = ({data: {title, content, id, userId, postId, link}}) => (
+      <div className={styles.listContent}>
+        <div className={styles.description}>{content}</div>
+        <div className={styles.extra}>
+          <em>{dateFtt('yyyy-MM-dd hh:mm', id.creationTime)}</em>
+          {link?<a href={link}>&nbsp;<Icon type="book"/>&nbsp;</a>:null}
+          {link?<a onClick={this.onReadList}>Add to read list</a>:null}
+        </div>
       </div>
+    );
+    const IconText = ({type, text, onClick}) => (
+      <span onClick={onClick}>
+        <Icon type={type} style={{marginRight: 8}}/>
+        {text}
+      </span>
+    );
+    return (
+      <PageHeaderLayout
+        title={this.state.editing ?
+          <Input value={this.state.title || ''} onChange={(e) => this.setState({title: e.target.value})}/>
+          : item.title}
+        content={''}
+        action={item.userId === userId ? (this.state.editing?<Button.Group>
+          <Button onClick={() => this.onEdit()}>Save</Button>
+          <Button onClick={() => this.onEditCancel()}>Cancel</Button>
+        </Button.Group>:<Button.Group>
+          <Button onClick={() => this.onEditStart(item)}>Edit</Button>
+        </Button.Group>) : null}
+      >
+        <div className={styles.container}>
+          <Card
+            loading={loading}
+            style={{marginTop: 10}}
+            bordered={true}
+            actions={[
+              <IconText type={likes.find(e => e.userId === userId)?"like":"like-o"} onClick={() => {
+                this.onLike()
+              }} text={<Tooltip title={likes && likes.map(e => e.userId).join(', ')} >
+                like ({likes && likes.length})</Tooltip>}/>,
+
+              <IconText type="message" onClick={() => this.queryComment(item.postId)}
+                        text={
+                          <span>comment ({comments && comments.length})</span>} />]
+            }
+            bodyStyle={{padding: '0 20px 20px 20px'}}
+          >
+            <div style={{marginTop: 20}}>
+              <Card.Meta
+                avatar={<Avatar size="small" style={{backgroundColor: '#2286ff'}}>{item.userId.charAt(0)}</Avatar>}
+                title={<Link to={`/posts/${item.userId}`}>{item.userId}</Link>}
+              />
+            </div>
+            <div>
+              {!this.state.editing ?
+                <ListContent data={item}/> :
+                <div>
+                  <TextArea value={this.state.content || ''} onChange={(e)=>this.setState({content: e.target.value})}/>
+                  <Input style={{marginTop: 5}} placeholder="link"
+                         value={this.state.link || ''} onChange={(e) => this.setState({link: e.target.value})}/>
+                </div>}
+            </div>
+          </Card>
+          <Card style={{marginTop: 20, marginBottom: 10}} bodyStyle={{padding: 0}} title={'Comments'}>
+            <Comments ref="comments" postId={item.postId} loading={this.props.commentLoading}
+                      dispatch={dispatch} list={this.props.comments}/>
+          </Card>
+        </div>
+      </PageHeaderLayout>
     );
   }
 }

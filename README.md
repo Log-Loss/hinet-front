@@ -1,5 +1,5 @@
 
-# Hi, net
+# Paperly
 
 ## Usage
 

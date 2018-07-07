@@ -28,12 +28,7 @@ class Step2 extends React.PureComponent {
     return (
 
       <div className={styles.stepForm} style={{marginBottom: 40}}>
-        <BuildContainer
-          cards={cards}
-          layers={layers}
-          dispatch={dispatch}
-          globalVariable={globalVariable}
-        />
+        <div>todo</div>
 
         <FooterToolbar children={[
           <Button type="dashed" onClick={onPrev} key={0}>

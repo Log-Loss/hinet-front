@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {connect} from 'dva';
-import {Link} from 'dva/router';
+import {Link, routerRedux} from 'dva/router';
 import moment from 'moment';
 import {
   Row,
@@ -79,6 +79,7 @@ export default class AllPost extends Component {
   }
 
   onShow() {
+    this.setState({newPost: false})
     if (this.props.match.url === '/community') {
       this.props.dispatch({
         type: 'post/fetchList',
@@ -86,8 +87,12 @@ export default class AllPost extends Component {
     } else {
       this.props.dispatch({
         type: 'post/fetchUserList',
-        payload: this.props.match.params.id ? this.props.match.params.id : localStorage.getItem('email'),
+        payload: this.props.match.params.id ? this.props.match.params.id : localStorage.getItem('id'),
       });
+      // this.props.dispatch({
+      //   type: 'post/fetchUserComments',
+      //   payload: this.props.match.params.id ? this.props.match.params.id : localStorage.getItem('id'),
+      // });
     }
 
   }
@@ -100,8 +105,8 @@ export default class AllPost extends Component {
   }
 
   render() {
-    const {list, loading, match} = this.props;
-    const userId = localStorage.getItem('email');
+    const {list, loading, match, dispatch} = this.props;
+    const userId = localStorage.getItem('id');
 
     const IconText = ({type, text, onClick}) => (
       <span onClick={onClick}>
@@ -110,14 +115,13 @@ export default class AllPost extends Component {
       </span>
     );
 
-    const ListContent = ({data: {content, timeStamp, userId, postId}}) => (
+    const ListContent = ({data: {title, content, id, userId, postId, link}}) => (
       <div className={styles.listContent}>
+        <div className={styles.listItemMetaTitle}>{title}</div>
         <div className={styles.description}>{content}</div>
         <div className={styles.extra}>
-          <Avatar size="small" style={{backgroundColor: '#2286ff'}}>{userId.charAt(0)}</Avatar>
-          <Link to={`/posts/${userId}`}>{userId}</Link> Published
-          at
-          <em>{dateFtt('yyyy-MM-dd hh:mm', timeStamp)}</em>
+          <em>{dateFtt('yyyy-MM-dd hh:mm', id.creationTime)}</em>
+          {link?<a href={link}>&nbsp;<Icon type="book"/></a>:null}
         </div>
       </div>
     );
@@ -149,46 +153,49 @@ export default class AllPost extends Component {
                 </div>
               }
             </Card> : null}
-          <Card
-            style={{marginTop: 10}}
-            bordered={false}
-            bodyStyle={{padding: '8px 32px 32px 32px'}}
-          >
+
             <List
+              grid={{gutter: 16, column: 2}}
               size="large"
               loading={list.length === 0 ? loading : false}
               rowKey="postId"
               itemLayout="vertical"
               dataSource={list}
-              renderItem={item => (<div style={{borderBottom: '1px solid #eeeeee'}}>
-                  <List.Item
-                    key={item.postId}
+              renderItem={item => (
+                <List.Item
+                  key={item.postId}
+                >
+                  <Card
+                    style={{marginTop: 10}}
+                    bordered={true}
                     actions={[
-                      <IconText type="like-o" text='like'/>,
-                      <IconText type="message" text='comment' onClick={() => this.queryComment(item.postId)}/>,
-                      item.userId === userId ? <IconText type="delete" text='delete'
-                                                         onClick={() => this.onDelete(item.postId)}/> : null,
-                    ]}
-                    extra={<div className={styles.listItemExtra}/>}
+                      <IconText type="like-o" onClick={()=>{dispatch(routerRedux.push('/post/' + item.postId))}} text='like'/>,
+                      <IconText type="message" onClick={()=>{dispatch(routerRedux.push('/post/' + item.postId))}} text='comment'/>].concat(
+                      item.userId === userId ? [<IconText type="delete" text='delete'
+                                                         onClick={() => this.onDelete(item.postId)}/>] : [])
+                    }
+                    bodyStyle={{padding: '0 20px 20px 20px'}}
                   >
-                    <List.Item.Meta
-                      title={(
-                        <a className={styles.listItemMetaTitle}>{item.title}</a>
-                      )}
-                      description={
-                        <Tag>Hi, net</Tag>
-                      }
+                    <div style={{marginTop: 20}}>
+                    <Card.Meta
+                      avatar={<Avatar size="small" style={{backgroundColor: '#2286ff'}}>{item.userId.charAt(0)}</Avatar>}
+                      title={<Link to={`/posts/${item.userId}`}>
+                       {item.userId}
+                        </Link>}
                     />
+                    </div>
+                  <div>
                     <ListContent data={item}/>
-                  </List.Item>
-                  {item.postId === this.state.current ?
-                    <div>
-                      <Comments postId={item.postId} loading={this.props.commentLoading}
-                                dispatch={this.props.dispatch} list={this.props.comments}/></div> : null}
-                </div>
+                  </div>
+                  {/*{item.postId === this.state.current ?*/}
+                    {/*<div>*/}
+                      {/*<Comments postId={item.postId} loading={this.props.commentLoading}*/}
+                                {/*dispatch={this.props.dispatch} list={this.props.comments}/></div> : null}*/}
+                  </Card>
+                </List.Item>
+
               )}
             />
-          </Card>
         </div>
       </PageHeaderLayout>
     );

@@ -14,9 +14,10 @@ export default {
         payload: true,
       });
       const response = yield call(register, payload);
-      if (response.code === 200) {
-        localStorage.setItem('id', response.result.id);
-        localStorage.setItem('email', response.result.email);
+      console.log(response);
+      if (response.id) {
+        localStorage.setItem('id', response.userId);
+        localStorage.setItem('email', response.email);
       }
       yield put({
         type: 'registerHandle',
@@ -33,7 +34,7 @@ export default {
     registerHandle(state, { payload }) {
       return {
         ...state,
-        code: payload.code,
+        code: payload.userId?200:400,
       };
     },
     changeSubmitting(state, { payload }) {

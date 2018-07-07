@@ -35,32 +35,39 @@ export const getRouterData = (app) => {
     '/': {
       component: dynamicWrapper(app, ['user', 'login'], () => import('../layouts/BasicLayout')),
     },
-    '/hello': {
-      component: dynamicWrapper(app, [], () => import('../routes/Hinet/Home')),
-    },
-    '/workspaces': {
-      component: dynamicWrapper(app, ['workspace'], () => import('../routes/Hinet/WorkspaceList')),
-    },
-    '/workspace/:id': {
-      component: dynamicWrapper(app, ['workspace'], () => import('../routes/Hinet/ModelList')),
-    },
-    '/model/:id': {
-      component: dynamicWrapper(app, ['model', 'job'], () => import('../routes/Hinet/StepForm')),
-    },
-    '/model/:id/dataset': {
-      component: dynamicWrapper(app, ['model'], () => import('../routes/Hinet/StepForm/Step1')),
-    },
-    '/model/:id/build': {
-      component: dynamicWrapper(app, ['model'], () => import('../routes/Hinet/StepForm/Step2')),
-    },
-    '/model/:id/result': {
-      component: dynamicWrapper(app, ['model', 'job'], () => import('../routes/Hinet/StepForm/Step3')),
-    },
     '/community': {
       component: dynamicWrapper(app, ['post'], () => import('../routes/Community/AllPost')),
     },
+    '/hello': {
+      component: dynamicWrapper(app, [], () => import('../routes/Hinet/Home')),
+    },
+    // '/workspaces': {
+    //   component: dynamicWrapper(app, ['workspace'], () => import('../routes/Hinet/WorkspaceList')),
+    // },
+    // '/workspace/:id': {
+    //   component: dynamicWrapper(app, ['workspace'], () => import('../routes/Hinet/ModelList')),
+    // },
+    // '/model/:id': {
+    //   component: dynamicWrapper(app, ['model', 'job'], () => import('../routes/Hinet/StepForm')),
+    // },
+    // '/model/:id/dataset': {
+    //   component: dynamicWrapper(app, ['model'], () => import('../routes/Hinet/StepForm/Step1')),
+    // },
+    // '/model/:id/build': {
+    //   component: dynamicWrapper(app, ['model'], () => import('../routes/Hinet/StepForm/Step2')),
+    // },
+    // '/model/:id/result': {
+    //   component: dynamicWrapper(app, ['model', 'job'], () => import('../routes/Hinet/StepForm/Step3')),
+    // },
+
     '/posts/:id?': {
       component: dynamicWrapper(app, ['post'], () => import('../routes/Community/AllPost')),
+    },
+    '/post/:postId?': {
+      component: dynamicWrapper(app, ['post'], () => import('../routes/Community/PostDetail')),
+    },
+    '/read': {
+      component: dynamicWrapper(app, ['post'], () => import('../routes/Community/ReadList')),
     },
 
 

@@ -8,15 +8,15 @@ import logo from '../assets/logo.png';
 import { getRoutes } from '../utils/utils';
 
 
-const copyright = <div>Hi, net Presents</div>;
+const copyright = <div>Paperly Presents</div>;
 
 class UserLayout extends React.PureComponent {
   getPageTitle() {
     const { routerData, location } = this.props;
     const { pathname } = location;
-    let title = 'Hi, net';
+    let title = 'Paperly';
     if (routerData[pathname] && routerData[pathname].name) {
-      title = `${routerData[pathname].name} - Hi, net`;
+      title = `${routerData[pathname].name} - Paperly`;
     }
     return title;
   }
@@ -29,10 +29,10 @@ class UserLayout extends React.PureComponent {
             <div className={styles.header}>
               <Link to="/">
                 <img alt="logo" className={styles.logo} src={logo} />
-                <span className={styles.title}>Hi, net</span>
+                <span className={styles.title}>Paperly</span>
               </Link>
             </div>
-            <div className={styles.desc}>Calculate the world</div>
+            <div className={styles.desc}></div>
           </div>
           {
             getRoutes(match.path, routerData).map(item =>

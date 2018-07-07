@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {connect} from 'dva';
+import {Link, routerRedux} from 'dva/router';
 import moment from 'moment';
 import {
   Row,
@@ -19,44 +20,87 @@ const Search = Input.Search;
 const {Meta} = Card;
 
 
-export default class AllPost extends Component {
+export default class Comments extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
       comment: '',
+      commentId: null,
     };
   }
 
+  focusSearch() {
+    console.log(this.refs)
+    this.refs.search.focus()
+  }
+
+  editComment = (item) => {
+    if (this.state.commentId === item.commentId) {
+      this.setState({commentId: null, comment: ''})
+    } else {
+      this.setState({commentId: item.commentId, comment: item.content});
+      this.focusSearch()
+    }
+  }
+
   onChangeComment = (e) => {
-    this.setState({ comment: e.target.value });
+    this.setState({comment: e.target.value});
   }
 
   onReply = (e) => {
-    this.setState({ comment: 'Reply to ' + e + ': '});
+    this.setState({comment: 'Reply to @' + e + ': '});
+    this.focusSearch();
   }
 
   componentDidMount() {
-    this.onShow();
   }
 
-  onShow() {
+  onTheShow() {
     this.props.dispatch({
       type: 'post/fetchComments',
       payload: this.props.postId,
     });
   }
 
-  onComment (value) {
+  onComment = (value) => {
+    if (this.state.commentId)
+      return this.updateComment(value)
     this.props.dispatch({
       type: 'post/addComment',
       payload: {
-        userId: localStorage.getItem('email'),
+        userId: localStorage.getItem('id'),
         postId: this.props.postId,
         content: value,
       },
     });
-    setTimeout(() => this.onShow(), 500);
+    setTimeout(() => this.onTheShow(), 500);
+    this.setState({comment: ''});
+  }
+
+  updateComment = (value) => {
+    console.log(value)
+    this.props.dispatch({
+      type: 'post/updateComment',
+      payload: {
+        commentId: this.state.commentId,
+        params: {
+          userId: localStorage.getItem('id'),
+          postId: this.props.postId,
+          content: value,
+        }
+      },
+    });
+    setTimeout(() => this.onTheShow(), 500);
+    this.setState({comment: '', commentId: null});
+  }
+
+  deleteComment(value) {
+    this.props.dispatch({
+      type: 'post/deleteComment',
+      payload: value
+    });
+    setTimeout(() => this.onTheShow(), 500);
     this.setState({comment: ''});
   }
 
@@ -69,7 +113,7 @@ export default class AllPost extends Component {
 
   render() {
     const {postId, list, loading} = this.props;
-    const userId = localStorage.getItem('email');
+    const userId = localStorage.getItem('id');
 
     const IconText = ({type, text, onClick}) => (
       <span onClick={onClick}>
@@ -78,13 +122,14 @@ export default class AllPost extends Component {
       </span>
     );
 
-    const ListContent = ({data: {content, timeStamp, userId}}) => (
+    const ListContent = ({data: {content, id, userId}}) => (
       <div className={styles.listContent}>
         <div className={styles.description}>{content}</div>
         <div className={styles.extra}>
-          <Avatar size="small" style={{backgroundColor: '#2286ff'}}>{userId.charAt(0)}</Avatar><a>{userId}</a> Commented
+          <Avatar size="small" style={{backgroundColor: '#2286ff'}}>{userId.charAt(0)}</Avatar>
+          <Link to={`/posts/${userId}`}>{userId}</Link> commented
           at
-          <em>{dateFtt('yyyy-MM-dd hh:mm', timeStamp)}</em>
+          <em>{dateFtt('yyyy-MM-dd hh:mm', id.creationTime)}</em>
         </div>
       </div>
     );
@@ -97,25 +142,29 @@ export default class AllPost extends Component {
           loading={list.length === 0 ? loading : false}
           rowKey="postId"
           itemLayout="vertical"
+          locale={{emptyText: 'No Comments'}}
           dataSource={loading ? [] : list}
           renderItem={item => (
             <List.Item
               key={item.postId}
               actions={[
                 <IconText type="like-o" text='like'/>,
-                <IconText type="message" onClick={()=>this.onReply(item.userId)} text='reply'/>,
-                item.userId === userId ? <IconText type="delete" text='delete'
-                /> : null,
-              ]}
+                <IconText type="message" onClick={() => this.onReply(item.userId)} text='reply'/>,
+              ].concat(item.userId === userId ? [
+                <IconText type="edit" text='edit' onClick={() => this.editComment(item)}
+                />,
+                <IconText type="delete" text='delete' onClick={() => this.deleteComment(item.commentId)}
+                />] : [],)}
               extra={<div className={styles.listItemExtra}/>}
             >
               <ListContent data={item}/>
             </List.Item>
           )}
         />
-        <Search placeholder="Share your idea..." onSearch={value => this.onComment(value)} value={this.state.comment}
+        <Search ref="search" placeholder="Share your idea..." onSearch={value => this.onComment(value)}
+                value={this.state.comment}
                 onChange={this.onChangeComment}
-                enterButton="Comment" size="default"/>
+                enterButton={this.state.commentId ? "Edit" : "Comment"} size="default"/>
 
       </div>
     );

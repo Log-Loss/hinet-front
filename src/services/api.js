@@ -4,14 +4,14 @@ import request from '../utils/request';
 import {apiUrl, hadoopUrl} from './config';
 
 export async function login(params) {
-  return request(`${apiUrl}/user/session`, {
+  return request(`${apiUrl}/account/login`, {
     method: 'POST',
     body: params,
   });
 }
 
 export async function register(params) {
-  return request(`${apiUrl}/user`, {
+  return request(`${apiUrl}/account/register`, {
     method: 'POST',
     body: params,
   });
